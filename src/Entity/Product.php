@@ -22,7 +22,7 @@ class Product
     private $name;
 
     /**
-     * @ORM\Column(type="decimal", precision=10, scale=2)
+     * @ORM\Column(type="integer")
      */
     private $price;
 
@@ -53,12 +53,12 @@ class Product
         return $this;
     }
 
-    public function getPrice()
+    public function getPrice(): ?int
     {
         return $this->price;
     }
 
-    public function setPrice($price): self
+    public function setPrice(int $price): self
     {
         $this->price = $price;
 
