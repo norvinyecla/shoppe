@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
@@ -33,6 +34,9 @@ class Product
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
+     * @Assert\NotBlank(message="Please, upload the photo as a JPG file")
+     * @Assert\File(mimeTypes={ "image/jpeg" })
      */
     private $picture;
 
@@ -77,12 +81,12 @@ class Product
         return $this;
     }
 
-    public function getPicture(): ?string
+    public function getPicture()
     {
         return $this->picture;
     }
 
-    public function setPicture(string $picture): self
+    public function setPicture($picture)
     {
         $this->picture = $picture;
 
