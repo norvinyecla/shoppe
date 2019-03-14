@@ -35,7 +35,7 @@ class Product
     /**
      * @ORM\Column(type="string", length=255)
      * 
-     * @Assert\NotBlank(message="Please, upload the photo as a JPG file")
+     * @Assert\NotBlank(message="Please, upload the photo as a JPG file", groups={"add"})
      * @Assert\File(mimeTypes={ "image/jpeg" })
      */
     private $picture;

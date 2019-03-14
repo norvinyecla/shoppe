@@ -6,6 +6,7 @@ use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,7 +33,7 @@ class ProductController extends AbstractController
     public function new(Request $request): Response
     {
         $product = new Product();
-        $form = $this->createForm(ProductType::class, $product);
+        $form = $this->createForm(ProductType::class, $product, ['validation_groups' => ['Default', 'add']]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -91,10 +92,33 @@ class ProductController extends AbstractController
      */
     public function edit(Request $request, Product $product): Response
     {
+        $product->setPicture(
+            new File($this->getParameter('pictures_directory') . '/' . $product->getPicture())
+        );
+
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Symfony\Component\HttpFoundation\File\UploadedFile $pictureFile */
+            $pictureFile = $product->getPicture();
+
+            if ($pictureFile) {
+            
+                $pictureFilename = $this->generateUniqueFileName() . '.' . $pictureFile->guessExtension();
+
+                // Move the file to the directory where brochures are stored
+                try {
+                    $pictureFile->move(
+                        $this->getParameter('pictures_directory'),
+                        $pictureFilename
+                    );
+                } catch (Exception $e) {
+                    // catch exception
+                }
+
+            }
+
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('product_index', [
